@@ -84,9 +84,8 @@ public class SuperWeChatApplication extends Application {
 
 	/**
 	 * 设置用户名
-	 *
-	 * @param user
-	 */
+	 * @param username
+     */
 	public void setUserName(String username) {
 	    hxSDKHelper.setHXId(username);
 	}

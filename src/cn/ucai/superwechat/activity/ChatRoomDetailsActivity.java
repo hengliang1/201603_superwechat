@@ -230,8 +230,6 @@ public class ChatRoomDetailsActivity extends BaseActivity implements OnClickList
 
 	/**
 	 * 退出群组
-	 * 
-	 * @param groupId
 	 */
 	private void exitGrop() {
 		new Thread(new Runnable() {
@@ -251,7 +249,7 @@ public class ChatRoomDetailsActivity extends BaseActivity implements OnClickList
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), "退出聊天室失败: " + e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), "退出聊天室失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
 						}
 					});
 				}
@@ -433,7 +431,7 @@ public class ChatRoomDetailsActivity extends BaseActivity implements OnClickList
 								return;
 							}
 							if (!NetUtils.hasNetwork(getApplicationContext())) {
-								Toast.makeText(getApplicationContext(), getString(cn.ucai.superwechat.R.string.network_unavailable), 0).show();
+								Toast.makeText(getApplicationContext(), getString(cn.ucai.superwechat.R.string.network_unavailable), Toast.LENGTH_SHORT).show();
 								return;
 							}
 							EMLog.d("room", "remove user from room:" + username);

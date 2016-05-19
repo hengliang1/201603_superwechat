@@ -98,7 +98,7 @@ public class ChatHistoryFragment extends Fragment {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				EMContact emContact = adapter.getItem(position);
 				if (adapter.getItem(position).getUsername().equals(SuperWeChatApplication.getInstance().getUserName()))
-					Toast.makeText(getActivity(), st, 0).show();
+					Toast.makeText(getActivity(), st, Toast.LENGTH_SHORT).show();
 				else {
 					// 进入聊天页面
 					  Intent intent = new Intent(getActivity(), ChatActivity.class);
@@ -200,14 +200,11 @@ public class ChatHistoryFragment extends Fragment {
 		adapter.notifyDataSetChanged();
 	}
 
-	
-	
+
 	/**
 	 * 获取有聊天记录的users和groups
-	 * 
-	 * @param context
 	 * @return
-	 */
+     */
 	private List<EMContact> loadUsersWithRecentChat() {
 		List<EMContact> resultList = new ArrayList<EMContact>();
 		//获取有聊天记录的users，不包括陌生人
@@ -232,9 +229,8 @@ public class ChatHistoryFragment extends Fragment {
 
 	/**
 	 * 根据最后一条消息的时间排序
-	 * 
-	 * @param usernames
-	 */
+	 * @param contactList
+     */
 	private void sortUserByLastChatTime(List<EMContact> contactList) {
 		Collections.sort(contactList, new Comparator<EMContact>() {
 			@Override
