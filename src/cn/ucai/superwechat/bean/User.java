@@ -26,7 +26,7 @@ public class User extends Location implements java.io.Serializable {
 
 		User user = (User) o;
 
-		return muserName.equals(user.muserName);
+		return muserName. equals(user.muserName);
 
 	}
 
