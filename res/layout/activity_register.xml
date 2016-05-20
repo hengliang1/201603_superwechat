@@ -169,7 +169,7 @@
                 android:src="@drawable/default_avatar" />
 
             <EditText
-                android:id="@+id/avatar"
+                android:id="@+id/etavatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
