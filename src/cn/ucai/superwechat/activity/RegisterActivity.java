@@ -14,6 +14,7 @@
 package cn.ucai.superwechat.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -116,6 +117,11 @@ public class RegisterActivity extends BaseActivity {
 		}
 	}
 
+	public void login(View view) {
+		Intent intent = new Intent(this,LoginActivity.class);
+		startActivity(intent);
+
+	}
 	public void back(View view) {
 		finish();
 	}
