@@ -17,19 +17,19 @@ import cn.ucai.superwechat.bean.User;
 public class UserDao extends SQLiteOpenHelper{
     public static final String TABLE_NAME = "user";
 
-    public UserDao(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, "user.db", factory, 1);
+    public UserDao(Context context) {
+        super(context, "user.db", null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "DROP TABLE IF EXISTS " + I.User.TABLE_NAME + "" +
-                "CREATE TABLE " + I.User.TABLE_NAME +
-                I.User.USER_ID + "INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
-                I.User.USER_NAME + "TEXT NOT NULL," +
-                I.User.PASSWORD + "  TEXT NOT NULL," +
+        String sql = " DROP TABLE IF EXISTS " + I.User.TABLE_NAME + "" +
+                " CREATE TABLE " + I.User.TABLE_NAME +
+                I.User.USER_ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                I.User.USER_NAME + " TEXT NOT NULL," +
+                I.User.PASSWORD + " TEXT NOT NULL," +
                 I.User.NICK + "  TEXT NOT NULL," +
-                I.User.UN_READ_MSG_COUNT + "  INTEGER DEFAULT 0"+");";
+                I.User.UN_READ_MSG_COUNT + " INTEGER DEFAULT 0"+");";
     }
 
     @Override
@@ -64,7 +64,7 @@ public class UserDao extends SQLiteOpenHelper{
         //创建数据库
         SQLiteDatabase db = getReadableDatabase();
         //获取sql语句
-        String sql = "select * from" + TABLE_NAME + "where" + I.User.USER_NAME + "=?";
+        String sql = "select * from " + TABLE_NAME + " where " + I.User.USER_NAME + "=?";
         //利用光标Cursor，Cursor指向当前的数据记录，然后可以从光标中获取相应的数据,执行本地sql语句查询
         Cursor c = db.rawQuery(sql, new String[]{username});
         if (c.moveToNext()) {
