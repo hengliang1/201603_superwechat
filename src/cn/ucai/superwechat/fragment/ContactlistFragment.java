@@ -22,8 +22,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -74,6 +76,8 @@ import com.easemob.util.EMLog;
  * 
  */
 public class ContactlistFragment extends Fragment {
+	ContactListChangeReceiver mReceiver;
+
 	public static final String TAG = "ContactlistFragment";
 	private ContactAdapter adapter;
 	private List<EMUser> contactList;
@@ -204,7 +208,7 @@ public class ContactlistFragment extends Fragment {
 				hideSoftKeyboard();
 			}
 		});
-		
+
 		// 设置adapter
 		adapter = new ContactAdapter(getActivity(), cn.ucai.superwechat.R.layout.row_contact, contactList);
 		listView.setAdapter(adapter);
@@ -274,6 +278,7 @@ public class ContactlistFragment extends Fragment {
 		} else {
 			progressBar.setVisibility(View.GONE);
 		}
+		registerContactListChangeReceiver();
 	}
 
 	@Override
@@ -431,6 +436,9 @@ public class ContactlistFragment extends Fragment {
 		if(contactInfoSyncListener != null){
 			((DemoHXSDKHelper)HXSDKHelper.getInstance()).getUserProfileManager().removeSyncContactInfoListener(contactInfoSyncListener);
 		}
+		if (mReceiver != null) {
+			getActivity().unregisterReceiver(mReceiver);
+		}
 		super.onDestroy();
 	}
 	
@@ -503,4 +511,17 @@ public class ContactlistFragment extends Fragment {
 	    }
 	    
 	}
+
+	class ContactListChangeReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			refresh();
+		}
+	}
+	private void registerContactListChangeReceiver() {
+		mReceiver = new ContactListChangeReceiver();
+		IntentFilter filter = new IntentFilter("update_contact_list");
+		getActivity().registerReceiver(mReceiver, filter);
+	}
+
 }
