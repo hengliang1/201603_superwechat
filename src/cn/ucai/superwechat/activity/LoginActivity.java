@@ -23,7 +23,6 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
@@ -40,7 +39,6 @@ import com.android.volley.Response;
 import com.easemob.EMCallBack;
 
 import cn.ucai.superwechat.I;
-import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
@@ -50,6 +48,7 @@ import com.squareup.okhttp.Request;
 import cn.ucai.superwechat.Constant;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.DemoHXSDKHelper;
+import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.bean.Message;
 import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
@@ -59,16 +58,18 @@ import cn.ucai.superwechat.db.EMUserDao;
 import cn.ucai.superwechat.db.UserDao;
 import cn.ucai.superwechat.domain.EMUser;
 import cn.ucai.superwechat.listener.OnSetAvatarListener;
+import cn.ucai.superwechat.task.DownloadAllGroupTask;
+import cn.ucai.superwechat.task.DownloadContactListTask;
+import cn.ucai.superwechat.task.DownloadPublicGroupTask;
 import cn.ucai.superwechat.utils.CommonUtils;
 import cn.ucai.superwechat.utils.MD5;
 import cn.ucai.superwechat.utils.Utils;
 
 /**
  * 登陆页面
- * 
+ *
  */
 public class LoginActivity extends BaseActivity {
-	Context mContext;
 	private static final String TAG = "LoginActivity";
 	public static final int REQUEST_CODE_SETNICK = 1;
 	private EditText usernameEditText;
@@ -79,12 +80,29 @@ public class LoginActivity extends BaseActivity {
 
 	private String currentUsername;
 	private String currentPassword;
-
 	ProgressDialog pd;
+	Activity mContext;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mContext = this;
+		setListener();
 
+		if (SuperWeChatApplication.getInstance().getUserName() != null) {
+			usernameEditText.setText(SuperWeChatApplication.getInstance().getUserName());
+		}
+	}
+
+	private void setListener() {
+		OnUserNameChangedListener();
+		setOnRegisterListener();
+		setOnLoginListener();
+
+
+	}
+
+	private void OnUserNameChangedListener() {
 		// 如果用户名密码都有，直接进入主页面
 		if (DemoHXSDKHelper.getInstance().isLogined()) {
 			autoLogin = true;
@@ -92,26 +110,11 @@ public class LoginActivity extends BaseActivity {
 
 			return;
 		}
-		setContentView(cn.ucai.superwechat.R.layout.activity_login);
-		mContext = this;
+		setContentView(R.layout.activity_login);
 
-		usernameEditText = (EditText) findViewById(cn.ucai.superwechat.R.id.username);
-		passwordEditText = (EditText) findViewById(cn.ucai.superwechat.R.id.password);
+		usernameEditText = (EditText) findViewById(R.id.username);
+		passwordEditText = (EditText) findViewById(R.id.password);
 
-
-		if (SuperWeChatApplication.getInstance().getUserName() != null) {
-			usernameEditText.setText(SuperWeChatApplication.getInstance().getUserName());
-		}
-		setListener();
-	}
-
-	private void setListener() {
-		OnLoginListener();
-		OnUserNameChangedListener();
-		OnRegisterListener();
-	}
-
-	private void OnUserNameChangedListener() {
 		// 如果用户名改变，清空密码
 		usernameEditText.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -134,43 +137,30 @@ public class LoginActivity extends BaseActivity {
 
 	/**
 	 * 登录
+	 *
+	 *
 	 */
-	private void OnLoginListener() {
+	private void setOnLoginListener() {
 		findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (!CommonUtils.isNetWorkConnected(mContext)) {
-					Toast.makeText(mContext, cn.ucai.superwechat.R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
+					Toast.makeText(mContext, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
 					return;
 				}
 				currentUsername = usernameEditText.getText().toString().trim();
 				currentPassword = passwordEditText.getText().toString().trim();
 
 				if (TextUtils.isEmpty(currentUsername)) {
-					Toast.makeText(mContext, cn.ucai.superwechat.R.string.User_name_cannot_be_empty, Toast.LENGTH_SHORT).show();
+					Toast.makeText(mContext, R.string.User_name_cannot_be_empty, Toast.LENGTH_SHORT).show();
 					return;
 				}
 				if (TextUtils.isEmpty(currentPassword)) {
-					Toast.makeText(mContext, cn.ucai.superwechat.R.string.Password_cannot_be_empty, Toast.LENGTH_SHORT).show();
+					Toast.makeText(mContext, R.string.Password_cannot_be_empty, Toast.LENGTH_SHORT).show();
 					return;
 				}
 
 				showProgressShow();
-				// 更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
-				boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
-						SuperWeChatApplication.currentUserNick.trim());
-				if (!updatenick) {
-					Log.e("LoginActivity", "update current user nick fail");
-				}
-				if (!LoginActivity.this.isFinishing() && pd.isShowing()) {
-					pd.dismiss();
-				}
-				// 进入主页面
-				Intent intent = new Intent(LoginActivity.this,
-						MainActivity.class);
-				startActivity(intent);
-
-				finish();
 
 				final long start = System.currentTimeMillis();
 				// 调用sdk登陆方法登陆聊天服务器
@@ -179,9 +169,10 @@ public class LoginActivity extends BaseActivity {
 					@Override
 					public void onSuccess() {
 						if (!progressShow) {
-							loginAppServer();
 							return;
 						}
+						loginAppServer();
+
 						// 更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
 						boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
 								SuperWeChatApplication.currentUserNick.trim());
@@ -212,7 +203,7 @@ public class LoginActivity extends BaseActivity {
 						runOnUiThread(new Runnable() {
 							public void run() {
 								pd.dismiss();
-								Toast.makeText(getApplicationContext(), getString(cn.ucai.superwechat.R.string.Login_failed) + message,
+								Toast.makeText(getApplicationContext(), getString(R.string.Login_failed) + message,
 										Toast.LENGTH_SHORT).show();
 							}
 						});
@@ -221,26 +212,25 @@ public class LoginActivity extends BaseActivity {
 			}
 		});
 
+
 	}
 
 	private void loginAppServer() {
 		UserDao dao = new UserDao(mContext);
-		User user = dao.findUserByName(currentUsername);
-		if (user != null) {
-			if (user.getMUserPassword().equals(MD5.getData(currentPassword))) {
+		User user = dao.findUserByUserName(currentUsername);
+		if(user!=null){
+			if(user.getMUserPassword().equals(MD5.getData(currentPassword))){
 				loginSuccess();
-			} else {
+			}else {
 				pd.dismiss();
-				Toast.makeText(getApplicationContext(),
-						R.string.login_failure_failed, Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), R.string.login_failure_failed, Toast.LENGTH_LONG).show();
 			}
-		} else {
+		}else {
 			try {
-				String path = new ApiParams()
-						.with(I.User.USER_NAME,currentUsername)
-                        .with(I.User.PASSWORD,currentPassword)
-						.getRequestUrl(I.REQUEST_LOGIN);
-				executeRequest(new GsonRequest<User>(path,User.class,responseListener(),errorListener()));
+				String path = new ApiParams().with(I.User.USER_NAME,currentUsername)
+						.with(I.User.PASSWORD,currentPassword).getRequestUrl(I.REQUEST_LOGIN);
+				executeRequest(	new GsonRequest<User>(path,User.class,
+						responseListener(),errorListener()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -251,28 +241,28 @@ public class LoginActivity extends BaseActivity {
 		return new Response.Listener<User>() {
 			@Override
 			public void onResponse(User user) {
-				if (user.isResult()) {
+				if(user.isResult()){
 					saveUser(user);
+					user.setMUserPassword(MD5.getData(user.getMUserPassword()));
+					UserDao dao = new UserDao(mContext);
+					dao.addUser(user);
 					loginSuccess();
-				} else {
+				}else {
 					pd.dismiss();
-					Utils.showToast(mContext, Utils.getResourceString(mContext, user.getMsg()) , Toast.LENGTH_SHORT);
+					Utils.showToast(mContext,Utils.getResourceString(mContext,user.getMsg()),Toast.LENGTH_SHORT);
 				}
 			}
 		};
 	}
 
-	/**
-	 * 保存用户
-	 * @param user
-     */
 	private void saveUser(User user) {
 		SuperWeChatApplication instance = SuperWeChatApplication.getInstance();
 		instance.setUser(user);
-		//登录成功，保存用户名密码
-		instance.setUserName(currentUsername);
-		instance.setPassword(currentPassword);
+		// 登陆成功，保存用户名密码
+		instance.setUserName(user.getMUserName());
+		instance.setPassword(user.getMUserPassword());
 		SuperWeChatApplication.currentUserNick = user.getMUserNick();
+
 	}
 
 	private void loginSuccess(){
@@ -283,27 +273,38 @@ public class LoginActivity extends BaseActivity {
 			EMChatManager.getInstance().loadAllConversations();
 			// 处理好友和群组
 			initializeContacts();
-			//下载用户头像到sd卡里面
+			//下载头像
 			final OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
 			utils.url(SuperWeChatApplication.SERVER_ROOT)
-					.addParam(I.KEY_REQUEST, I.REQUEST_DOWNLOAD_AVATAR)
-					.addParam(I.AVATAR_TYPE, currentUsername)
+					.addParam(I.KEY_REQUEST,I.REQUEST_DOWNLOAD_AVATAR)
+					.addParam(I.AVATAR_TYPE,currentUsername)
 					.doInBackground(new Callback() {
 						@Override
 						public void onFailure(Request request, IOException e) {
-							Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
+							Toast.makeText(mContext,e.getMessage(),Toast.LENGTH_SHORT).show();
 						}
 
 						@Override
 						public void onResponse(com.squareup.okhttp.Response response) throws IOException {
 							String avatarPath = I.AVATAR_TYPE_USER_PATH + I.BACKSLASH
 									+ currentUsername + I.AVATAR_SUFFIX_JPG;
-							File file = OnSetAvatarListener.getAvatarFile((Activity) mContext, avatarPath);
+							File file = OnSetAvatarListener.getAvatarFile(mContext,avatarPath);
 							FileOutputStream out = null;
 							out = new FileOutputStream(file);
-							utils.downloadFile(response, file, false);
+							utils.downloadFile(response,file,false);
 						}
 					}).execute(null);
+
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					new DownloadContactListTask(mContext,currentUsername).execute();
+					new DownloadAllGroupTask(mContext,currentUsername).execute();
+					new DownloadPublicGroupTask(mContext,currentUsername,
+							I.PAGE_ID_DEFAULT,I.PAGE_SIZE_DEFAULT).execute();
+				}
+			});
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -319,6 +320,7 @@ public class LoginActivity extends BaseActivity {
 		}
 
 	}
+
 	private void showProgressShow() {
 		progressShow = true;
 		pd = new ProgressDialog(LoginActivity.this);
@@ -330,7 +332,7 @@ public class LoginActivity extends BaseActivity {
 				progressShow = false;
 			}
 		});
-		pd.setMessage(getString(cn.ucai.superwechat.R.string.Is_landing));
+		pd.setMessage(getString(R.string.Is_landing));
 		pd.show();
 	}
 
@@ -340,26 +342,26 @@ public class LoginActivity extends BaseActivity {
 		EMUser newFriends = new EMUser();
 		newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
 		String strChat = getResources().getString(
-				cn.ucai.superwechat.R.string.Application_and_notify);
+				R.string.Application_and_notify);
 		newFriends.setNick(strChat);
 
 		userlist.put(Constant.NEW_FRIENDS_USERNAME, newFriends);
 		// 添加"群聊"
 		EMUser groupUser = new EMUser();
-		String strGroup = getResources().getString(cn.ucai.superwechat.R.string.group_chat);
+		String strGroup = getResources().getString(R.string.group_chat);
 		groupUser.setUsername(Constant.GROUP_USERNAME);
 		groupUser.setNick(strGroup);
 		groupUser.setHeader("");
 		userlist.put(Constant.GROUP_USERNAME, groupUser);
-		
-		// 添加"Robot"
-		EMUser robotUser = new EMUser();
-		String strRobot = getResources().getString(cn.ucai.superwechat.R.string.robot_chat);
-		robotUser.setUsername(Constant.CHAT_ROBOT);
-		robotUser.setNick(strRobot);
-		robotUser.setHeader("");
-		userlist.put(Constant.CHAT_ROBOT, robotUser);
-		
+
+//		// 添加"Robot"
+//		EMUser robotUser = new EMUser();
+//		String strRobot = getResources().getString(R.string.robot_chat);
+//		robotUser.setUsername(Constant.CHAT_ROBOT);
+//		robotUser.setNick(strRobot);
+//		robotUser.setHeader("");
+//		userlist.put(Constant.CHAT_ROBOT, robotUser);
+
 		// 存入内存
 		((DemoHXSDKHelper) HXSDKHelper.getInstance()).setContactList(userlist);
 		// 存入db
@@ -367,11 +369,13 @@ public class LoginActivity extends BaseActivity {
 		List<EMUser> users = new ArrayList<EMUser>(userlist.values());
 		dao.saveContactList(users);
 	}
-	
+
 	/**
 	 * 注册
+	 *
+	 *
 	 */
-	private void OnRegisterListener() {
+	private void setOnRegisterListener() {
 		findViewById(R.id.btn_register).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -380,6 +384,7 @@ public class LoginActivity extends BaseActivity {
 		});
 
 	}
+
 
 	@Override
 	protected void onResume() {
