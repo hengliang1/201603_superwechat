@@ -51,8 +51,11 @@ import android.widget.TextView;
 import android.widget.TextView.BufferType;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.EMCallBack;
 import com.easemob.EMError;
+
+import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
@@ -322,6 +325,7 @@ public class MessageAdapter extends BaseAdapter{
 			convertView = createViewByMessage(message, position);
 			if (message.getType() == EMMessage.Type.IMAGE) {
 				try {
+					holder.avatar = (NetworkImageView) convertView.findViewById(R.id.avatar);
 					holder.iv = ((ImageView) convertView.findViewById(cn.ucai.superwechat.R.id.iv_sendPicture));
 					holder.iv_avatar = (ImageView) convertView.findViewById(cn.ucai.superwechat.R.id.iv_userhead);
 					holder.tv = (TextView) convertView.findViewById(cn.ucai.superwechat.R.id.percentage);
@@ -1527,6 +1531,7 @@ public class MessageAdapter extends BaseAdapter{
 	}
 
 	public static class ViewHolder {
+		NetworkImageView avatar;
 		ImageView iv;
 		TextView tv;
 		ProgressBar pb;
