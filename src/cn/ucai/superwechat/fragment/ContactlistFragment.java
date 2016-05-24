@@ -96,7 +96,7 @@ public class ContactlistFragment extends Fragment {
 	HXContactInfoSyncListener contactInfoSyncListener;
 	View progressBar;
 	Handler handler = new Handler();
-    private EMUser toBeProcessUser;
+    private Contact toBeProcessUser;
     private String toBeProcessUsername;
 
 	ArrayList<Contact> mcontactList;
@@ -265,16 +265,16 @@ public class ContactlistFragment extends Fragment {
 
 	private void setContactItemClickListener() {
 		// 设置adapter
-		adapter = new ContactAdapter(getActivity(), cn.ucai.superwechat.R.layout.row_contact, contactList);
+		adapter = new ContactAdapter(getActivity(), cn.ucai.superwechat.R.layout.row_contact, mcontactList);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				String username = adapter.getItem(position).getUsername();
+				String username = adapter.getItem(position).getMContactCname();
 				if (Constant.NEW_FRIENDS_USERNAME.equals(username)) {
 					// 进入申请与通知页面
-					EMUser user = ((DemoHXSDKHelper) HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
+					EMUser user = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
 					user.setUnreadMsgCount(0);
 					startActivity(new Intent(getActivity(), NewFriendsMsgActivity.class));
 				} else if (Constant.GROUP_USERNAME.equals(username)) {
@@ -288,7 +288,7 @@ public class ContactlistFragment extends Fragment {
 					startActivity(new Intent(getActivity(), RobotsActivity.class));
 				}else {
 					// demo中直接进入聊天页面，实际一般是进入用户详情页
-					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getUsername()));
+					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getMContactCname()));
 				}
 			}
 		});
@@ -305,7 +305,7 @@ public class ContactlistFragment extends Fragment {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		if (((AdapterContextMenuInfo) menuInfo).position > 1) {
 		    toBeProcessUser = adapter.getItem(((AdapterContextMenuInfo) menuInfo).position);
-		    toBeProcessUsername = toBeProcessUser.getUsername();
+		    toBeProcessUsername = toBeProcessUser.getMContactCname();
 			getActivity().getMenuInflater().inflate(cn.ucai.superwechat.R.menu.context_contact_list, menu);
 		}
 	}
@@ -318,7 +318,7 @@ public class ContactlistFragment extends Fragment {
                 deleteContact(toBeProcessUser);
                 // 删除相关的邀请消息
                 InviteMessgeDao dao = new InviteMessgeDao(getActivity());
-                dao.deleteMessage(toBeProcessUser.getUsername());
+                dao.deleteMessage(toBeProcessUser.getMContactCname());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -351,7 +351,7 @@ public class ContactlistFragment extends Fragment {
 	 * 删除联系人
 	 * @param tobeDeleteUser
      */
-	public void deleteContact(final EMUser tobeDeleteUser) {
+	public void deleteContact(final Contact tobeDeleteUser) {
 		String st1 = getResources().getString(cn.ucai.superwechat.R.string.deleting);
 		final String st2 = getResources().getString(cn.ucai.superwechat.R.string.Delete_failed);
 		final ProgressDialog pd = new ProgressDialog(getActivity());
@@ -361,11 +361,11 @@ public class ContactlistFragment extends Fragment {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					EMContactManager.getInstance().deleteContact(tobeDeleteUser.getUsername());
+					EMContactManager.getInstance().deleteContact(tobeDeleteUser.getMContactCname());
 					// 删除db和内存中此用户的数据
 					EMUserDao dao = new EMUserDao(getActivity());
-					dao.deleteContact(tobeDeleteUser.getUsername());
-					((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().remove(tobeDeleteUser.getUsername());
+					dao.deleteContact(tobeDeleteUser.getMContactCname());
+					((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().remove(tobeDeleteUser.getMContactCname());
 					getActivity().runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
@@ -482,20 +482,22 @@ public class ContactlistFragment extends Fragment {
 
 		// 添加"群聊"
 		Contact groupUser = new Contact();
+		groupUser.setMContactId(-2);
 		String strGroup = getActivity().getString(cn.ucai.superwechat.R.string.group_chat);
 		groupUser.setMContactCname(Constant.GROUP_USERNAME);
 		groupUser.setMUserNick(strGroup);
 		groupUser.setHeader("");
-		if(!mcontactList.contains(groupUser)) {
+		if(mcontactList.indexOf(groupUser)==-1) {
 			this.mcontactList.add(0, groupUser);
 		}
 
 		// 添加user"申请与通知"
 		Contact newFriends = new Contact();
+		newFriends.setMContactId(-1);
 		newFriends.setMContactCname(Constant.NEW_FRIENDS_USERNAME);
 		String strChat = getActivity().getString(cn.ucai.superwechat.R.string.Application_and_notify);
 		newFriends.setMUserNick(strChat);
-		if(!mcontactList.contains(newFriends))
+		if(mcontactList.indexOf(newFriends)==-1)
 			this.mcontactList.add(0, newFriends);
 
 		for (Contact contact : mcontactList) {
