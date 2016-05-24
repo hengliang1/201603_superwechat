@@ -56,10 +56,7 @@ public class VoicePlayClickListener implements View.OnClickListener {
 	 * @param message
 	 * @param v
 	 * @param iv_read_status
-	 * @param context
 	 * @param activity
-	 * @param user
-	 * @param chatType
 	 */
 	public VoicePlayClickListener(EMMessage message, ImageView v, ImageView iv_read_status, BaseAdapter adapter, Activity activity,
 			String username) {
