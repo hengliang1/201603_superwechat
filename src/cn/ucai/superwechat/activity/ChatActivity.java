@@ -483,7 +483,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
             
         });
 	}
-	
+
 	protected void onListViewCreation(){
         adapter = new MessageAdapter(ChatActivity.this, toChatUsername, chatType);
         // 显示消息
