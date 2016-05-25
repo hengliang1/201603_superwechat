@@ -508,7 +508,7 @@ public class ContactlistFragment extends Fragment {
 
 			@Override
 			public int compare(Contact lhs, Contact rhs) {
-				return lhs.getMContactCname().compareTo(rhs.getMContactCname());
+				return lhs.getHeader().compareTo(rhs.getHeader());
 			}
 		});
 	}
