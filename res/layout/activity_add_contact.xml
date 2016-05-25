@@ -53,15 +53,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/mm_listitem"
-        android:visibility="gone" >
-
+        android:visibility="gone"
+        android:orientation="vertical">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@drawable/mm_listitem"
             android:duplicateParentState="true" >
 
-            <ImageView
+            <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/avatar"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -79,8 +79,6 @@
                 android:layout_toRightOf="@id/avatar"
                 android:textColor="#0F0F0F"
                 android:textSize="16sp" />
-
-
             <Button
                 android:id="@+id/indicator"
                 android:layout_width="wrap_content"
@@ -96,5 +94,13 @@
                 android:textSize="14sp" />
         </RelativeLayout>
     </LinearLayout>
-
+    <TextView
+        android:id="@+id/tv_show_nothing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="无结果"
+        android:paddingTop="30dp"
+        android:textSize="30dp"
+        android:visibility="gone"
+        android:gravity="center_horizontal"/>
 </LinearLayout>
