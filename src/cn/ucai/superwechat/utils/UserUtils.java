@@ -64,6 +64,11 @@ public class UserUtils {
 			setUserAvatar(getAvatarPath(userName),imageView);
 		}
 	}
+	public static void setUserBeanAvatar(User user,NetworkImageView imageView){
+		if(user!=null&&user.getMUserName()!=null){
+			setUserAvatar(getAvatarPath(user.getMUserName()),imageView);
+		}
+	}
 
 	private static void setUserAvatar(String url, NetworkImageView imageView) {
 		if (url == null || url.isEmpty())return;
@@ -122,6 +127,15 @@ public class UserUtils {
 			textView.setText(username);
 		}
 	}
+	public static void setUserBeanNick(User user, TextView textView) {
+		if (user != null) {
+			if (user.getMUserNick() != null) {
+				textView.setText(user.getMUserNick());
+			} else if (user.getMUserName() != null) {
+				textView.setText(user.getMUserName());
+			}
+		}
+	}
 
     /**
      * 设置当前用户昵称
@@ -130,6 +144,12 @@ public class UserUtils {
     	EMUser user = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getUserProfileManager().getCurrentUserInfo();
     	if(textView != null){
     		textView.setText(user.getNick());
+    	}
+    }
+    public static void setCurrentUserBeanNick(TextView textView){
+		User user = SuperWeChatApplication.getInstance().getUser();
+		if(user!=null&&user.getMUserNick()!=null&&textView != null){
+    		textView.setText(user.getMUserNick());
     	}
     }
 
