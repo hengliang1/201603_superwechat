@@ -29,7 +29,9 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import cn.ucai.superwechat.Constant;
+import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.data.RequestManager;
 import cn.ucai.superwechat.utils.UserUtils;
@@ -107,14 +109,16 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 		//显示申请与通知item
 		if(username.equals(Constant.NEW_FRIENDS_USERNAME)){
 		    holder.nameTextview.setText(user.getMUserNick());
+			int unreadAddressCountTotal = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME)
+					.getUnreadMsgCount();
 			holder.avatar.setImageUrl("", RequestManager.getImageLoader());
 		    holder.avatar.setDefaultImageResId(R.drawable.new_friends_icon);
 			holder.avatar.setErrorImageResId(R.drawable.new_friends_icon);
-			if(user.getMUserUnreadMsgCount() > 0){
-			    holder.unreadMsgView.setVisibility(View.VISIBLE);
+			if (user.getMUserUnreadMsgCount() > 0 || unreadAddressCountTotal > 0) {
+				holder.unreadMsgView.setVisibility(View.VISIBLE);
 //			    holder.unreadMsgView.setText(user.getUnreadMsgCount()+"");
-			}else{
-			    holder.unreadMsgView.setVisibility(View.INVISIBLE);
+			} else {
+				holder.unreadMsgView.setVisibility(View.INVISIBLE);
 			}
 		}else if(username.equals(Constant.GROUP_USERNAME)){
 			//群聊item
