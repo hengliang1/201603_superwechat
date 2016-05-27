@@ -114,7 +114,6 @@ public class ParseManager {
 	/**
      * 设置hearder属性，方便通讯中对联系人按header分类显示，以及通过右侧ABCD...字母栏快速定位联系人
      * 
-     * @param username
      * @param user
      */
     private static void setUserHearder(EMUser user) {
@@ -124,16 +123,18 @@ public class ParseManager {
         } else {
             headerName = user.getUsername();
         }
-        if (Character.isDigit(headerName.charAt(0))) {
-            user.setHeader("#");
-        } else {
-            user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
-                    .toUpperCase());
-            char header = user.getHeader().toLowerCase().charAt(0);
-            if (header < 'a' || header > 'z') {
-                user.setHeader("#");
-            }
-        }
+		if (headerName != null) {
+			if (Character.isDigit(headerName.charAt(0))) {
+				user.setHeader("#");
+			} else {
+				user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
+						.toUpperCase());
+				char header = user.getHeader().toLowerCase().charAt(0);
+				if (header < 'a' || header > 'z') {
+					user.setHeader("#");
+				}
+			}
+		}
     }
 	
 	public void asyncGetCurrentUserInfo(final EMValueCallBack<EMUser> callback){
