@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
@@ -43,6 +44,7 @@ import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.EMConversation.EMConversationType;
 import cn.ucai.superwechat.Constant;
 import cn.ucai.superwechat.DemoHXSDKHelper;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.domain.RobotUser;
 import cn.ucai.superwechat.utils.DateUtils;
 import cn.ucai.superwechat.utils.SmileUtils;
@@ -51,7 +53,7 @@ import com.easemob.util.EMLog;
 
 /**
  * 显示所有聊天记录adpater
- * 
+ *
  */
 public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 
@@ -60,7 +62,7 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 	private List<EMConversation> conversationList;
 	private List<EMConversation> copyConversationList;
 	private ConversationFilter conversationFilter;
-    private boolean notiyfyByFilter;
+	private boolean notiyfyByFilter;
 
 	public ChatAllHistoryAdapter(Context context, int textViewResourceId, List<EMConversation> objects) {
 		super(context, textViewResourceId, objects);
@@ -99,15 +101,17 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 		String username = conversation.getUserName();
 		if (conversation.getType() == EMConversationType.GroupChat) {
 			// 群聊消息，显示群聊头像
-			holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.group_icon);
-			EMGroup group = EMGroupManager.getInstance().getGroup(username);
-			holder.name.setText(group != null ? group.getGroupName() : username);
+			UserUtils.setGroupBeanAvatar(username,holder.avatar);
+			//holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.group_icon);
+			Group group = UserUtils.getGroupBeanFromHXID(username);
+			//EMGroup group = EMGroupManager.getInstance().getGroup(username);
+			holder.name.setText(group != null ? group.getMGroupName() : username);
 		} else if(conversation.getType() == EMConversationType.ChatRoom){
-		    holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.group_icon);
-            EMChatRoom room = EMChatManager.getInstance().getChatRoom(username);
-            holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
+			holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.group_icon);
+			EMChatRoom room = EMChatManager.getInstance().getChatRoom(username);
+			holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
 		}else {
-		    UserUtils.setUserBeanAvatar(username, holder.avatar);
+			UserUtils.setUserBeanAvatar(username, holder.avatar);
 			if (username.equals(Constant.GROUP_USERNAME)) {
 				holder.name.setText("群聊");
 
@@ -154,7 +158,7 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 
 	/**
 	 * 根据消息内容和消息类型获取消息内容提示
-	 * 
+	 *
 	 * @param message
 	 * @param context
 	 * @return
@@ -162,48 +166,48 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 	private String getMessageDigest(EMMessage message, Context context) {
 		String digest = "";
 		switch (message.getType()) {
-		case LOCATION: // 位置消息
-			if (message.direct == EMMessage.Direct.RECEIVE) {
-				// 从sdk中提到了ui中，使用更简单不犯错的获取string的方法
-				// digest = EasyUtils.getAppResourceString(context,
-				// "location_recv");
-				digest = getStrng(context, cn.ucai.superwechat.R.string.location_recv);
-				digest = String.format(digest, message.getFrom());
-				return digest;
-			} else {
-				// digest = EasyUtils.getAppResourceString(context,
-				// "location_prefix");
-				digest = getStrng(context, cn.ucai.superwechat.R.string.location_prefix);
-			}
-			break;
-		case IMAGE: // 图片消息
-			ImageMessageBody imageBody = (ImageMessageBody) message.getBody();
-			digest = getStrng(context, cn.ucai.superwechat.R.string.picture) + imageBody.getFileName();
-			break;
-		case VOICE:// 语音消息
-			digest = getStrng(context, cn.ucai.superwechat.R.string.voice);
-			break;
-		case VIDEO: // 视频消息
-			digest = getStrng(context, cn.ucai.superwechat.R.string.video);
-			break;
-		case TXT: // 文本消息
-			
-			if(((DemoHXSDKHelper)HXSDKHelper.getInstance()).isRobotMenuMessage(message)){
-				digest = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getRobotMenuMessageDigest(message);
-			}else if(message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
-				TextMessageBody txtBody = (TextMessageBody) message.getBody();
-				digest = getStrng(context, cn.ucai.superwechat.R.string.voice_call) + txtBody.getMessage();
-			}else{
-				TextMessageBody txtBody = (TextMessageBody) message.getBody();
-				digest = txtBody.getMessage();
-			}
-			break;
-		case FILE: // 普通文件消息
-			digest = getStrng(context, cn.ucai.superwechat.R.string.file);
-			break;
-		default:
-			EMLog.e(TAG, "unknow type");
-			return "";
+			case LOCATION: // 位置消息
+				if (message.direct == EMMessage.Direct.RECEIVE) {
+					// 从sdk中提到了ui中，使用更简单不犯错的获取string的方法
+					// digest = EasyUtils.getAppResourceString(context,
+					// "location_recv");
+					digest = getStrng(context, cn.ucai.superwechat.R.string.location_recv);
+					digest = String.format(digest, message.getFrom());
+					return digest;
+				} else {
+					// digest = EasyUtils.getAppResourceString(context,
+					// "location_prefix");
+					digest = getStrng(context, cn.ucai.superwechat.R.string.location_prefix);
+				}
+				break;
+			case IMAGE: // 图片消息
+				ImageMessageBody imageBody = (ImageMessageBody) message.getBody();
+				digest = getStrng(context, cn.ucai.superwechat.R.string.picture) + imageBody.getFileName();
+				break;
+			case VOICE:// 语音消息
+				digest = getStrng(context, cn.ucai.superwechat.R.string.voice);
+				break;
+			case VIDEO: // 视频消息
+				digest = getStrng(context, cn.ucai.superwechat.R.string.video);
+				break;
+			case TXT: // 文本消息
+
+				if(((DemoHXSDKHelper)HXSDKHelper.getInstance()).isRobotMenuMessage(message)){
+					digest = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getRobotMenuMessageDigest(message);
+				}else if(message.getBooleanAttribute(Constant.MESSAGE_ATTR_IS_VOICE_CALL,false)){
+					TextMessageBody txtBody = (TextMessageBody) message.getBody();
+					digest = getStrng(context, cn.ucai.superwechat.R.string.voice_call) + txtBody.getMessage();
+				}else{
+					TextMessageBody txtBody = (TextMessageBody) message.getBody();
+					digest = txtBody.getMessage();
+				}
+				break;
+			case FILE: // 普通文件消息
+				digest = getStrng(context, cn.ucai.superwechat.R.string.file);
+				break;
+			default:
+				EMLog.e(TAG, "unknow type");
+				return "";
 		}
 
 		return digest;
@@ -230,8 +234,8 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 	String getStrng(Context context, int resId) {
 		return context.getResources().getString(resId);
 	}
-	
-	
+
+
 
 	@Override
 	public Filter getFilter() {
@@ -240,7 +244,7 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 		}
 		return conversationFilter;
 	}
-	
+
 	private class ConversationFilter extends Filter {
 		List<EMConversation> mOriginalValues = null;
 
@@ -266,7 +270,7 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 				for (int i = 0; i < count; i++) {
 					final EMConversation value = mOriginalValues.get(i);
 					String username = value.getUserName();
-					
+
 					EMGroup group = EMGroupManager.getInstance().getGroup(username);
 					if(group != null){
 						username = group.getGroupName();
@@ -276,16 +280,16 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 					if (username.startsWith(prefixString)) {
 						newValues.add(value);
 					} else{
-						  final String[] words = username.split(" ");
-	                        final int wordCount = words.length;
+						final String[] words = username.split(" ");
+						final int wordCount = words.length;
 
-	                        // Start at index 0, in case valueText starts with space(s)
-	                        for (int k = 0; k < wordCount; k++) {
-	                            if (words[k].startsWith(prefixString)) {
-	                                newValues.add(value);
-	                                break;
-	                            }
-	                        }
+						// Start at index 0, in case valueText starts with space(s)
+						for (int k = 0; k < wordCount; k++) {
+							if (words[k].startsWith(prefixString)) {
+								newValues.add(value);
+								break;
+							}
+						}
 					}
 				}
 
@@ -300,7 +304,7 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 			conversationList.clear();
 			conversationList.addAll((List<EMConversation>) results.values);
 			if (results.count > 0) {
-			    notiyfyByFilter = true;
+				notiyfyByFilter = true;
 				notifyDataSetChanged();
 			} else {
 				notifyDataSetInvalidated();
@@ -309,14 +313,14 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 		}
 
 	}
-	
+
 	@Override
 	public void notifyDataSetChanged() {
-	    super.notifyDataSetChanged();
-	    if(!notiyfyByFilter){
-            copyConversationList.clear();
-            copyConversationList.addAll(conversationList);
-            notiyfyByFilter = false;
-        }
+		super.notifyDataSetChanged();
+		if(!notiyfyByFilter){
+			copyConversationList.clear();
+			copyConversationList.addAll(conversationList);
+			notiyfyByFilter = false;
+		}
 	}
 }
