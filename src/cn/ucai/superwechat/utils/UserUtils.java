@@ -12,6 +12,7 @@ import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.RequestManager;
 import cn.ucai.superwechat.domain.EMUser;
@@ -19,6 +20,8 @@ import cn.ucai.superwechat.domain.EMUser;
 import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.util.HanziToPinyin;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 public class UserUtils {
     /**
@@ -190,5 +193,45 @@ public class UserUtils {
 			}
 		}
 	}
+
+	public static void setGroupBeanAvatar(String mGroupHxid,NetworkImageView imageView) {
+		if (mGroupHxid != null && !mGroupHxid.isEmpty()) {
+			setGroupAvatar(getGroupAvatarPath(mGroupHxid), imageView);
+		}
+	}
+
+	private static void setGroupAvatar(String  url, NetworkImageView imageView) {
+		if (url==null||url.isEmpty()) return;
+		imageView.setDefaultImageResId(R.drawable.group_icon);
+		imageView.setImageUrl(url, RequestManager.getImageLoader());
+		imageView.setErrorImageResId(R.drawable.groups_icon);
+	}
+
+	public static String getGroupAvatarPath(String hxid) {
+		if (hxid==null||hxid.isEmpty()) return null;
+		return I.REQUEST_DOWNLOAD_AVATAR_GROUP + hxid;
+	}
+	public static String getPinYinFromHanZi(String hanzi) {
+		String pinyin = "";
+
+		for(int i=0;i<hanzi.length();i++){
+			String s = hanzi.substring(i,i+1);
+			pinyin = pinyin + HanziToPinyin.getInstance()
+					.get(s).get(0).target.toLowerCase();
+		}
+		return pinyin;
+	}
+	public static Group getGroupBeanFromHXID(String hxid){
+		if(hxid!=null&&!hxid.isEmpty()){
+			ArrayList<Group> groupList = SuperWeChatApplication.getInstance().getGroupList();
+			for(Group group : groupList){
+				if(group.getMGroupHxid().equals(hxid)){
+					return group;
+				}
+			}
+		}
+		return null;
+	}
+
 
 }
