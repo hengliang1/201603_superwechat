@@ -45,12 +45,12 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 	private LayoutInflater inflater;
 	private String newGroup;
 	private String addPublicGroup;
-	private SparseIntArray positionOfSection;
-	private SparseIntArray sectionOfPosition;
-	private int res;
-	List<String> list;
 	List<Group> groupList;
 	List<Group> copyroupGGList;
+	private int res;
+	private SparseIntArray positionOfSection;
+	private SparseIntArray sectionOfPosition;
+	List<String> list;
 	Context mContext;
 	private MyFilter myFilter;
 	private boolean notiyfyByFilter;
@@ -62,7 +62,9 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 		groupList = groups;
 		copyroupGGList = new ArrayList<Group>();
 		copyroupGGList.addAll(groups);
+		this.mContext=context;
 		//layoutInflater = LayoutInflater.from(context);
+
 	}
 
 	@Override

@@ -54,13 +54,13 @@ public class DownloadPublicGroupTask extends BaseActivity{
         return new Response.Listener<Group[]>() {
             @Override
             public void onResponse(Group[] groups) {
-                if (groups != null && groups.length > 1) {
-                    ArrayList<Group> groupList =
-                            SuperWeChatApplication.getInstance().getGroupList();
+                if (groups != null) {
+                    ArrayList<Group> publicGroupList =
+                            SuperWeChatApplication.getInstance().getPublicGroupList();
                     ArrayList<Group> list = Utils.array2List(groups);
                     for (Group g : list) {
-                        if (!groupList.contains(g)) {
-                            groupList.add(g);
+                        if (!publicGroupList.contains(g)) {
+                            publicGroupList.add(g);
                         }
                     }
                     mcontext.sendStickyBroadcast(new Intent("update_public_group"));
