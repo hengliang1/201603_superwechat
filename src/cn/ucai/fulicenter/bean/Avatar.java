@@ -8,7 +8,7 @@ public class Avatar extends Message implements java.io.Serializable {
 	// Fields
 
 	/**
-	 * 
+	 *
 	 */
 	private Integer mavatarId;
 	private Integer mavatarUserId;
@@ -24,7 +24,7 @@ public class Avatar extends Message implements java.io.Serializable {
 
 	/** full constructor */
 	public Avatar(Integer MAvatarUserId, String MAvatarUserName,
-			String MAvatarPath, Integer MAvatarType) {
+				  String MAvatarPath, Integer MAvatarType) {
 		this.mavatarUserId = MAvatarUserId;
 		this.mavatarUserName = MAvatarUserName;
 		this.mavatarPath = MAvatarPath;
@@ -79,7 +79,7 @@ public class Avatar extends Message implements java.io.Serializable {
 				+ ", MAvatarPath=" + mavatarPath + ", MAvatarType="
 				+ mavatarType + "]";
 	}
-	
-	
+
+
 
 }
