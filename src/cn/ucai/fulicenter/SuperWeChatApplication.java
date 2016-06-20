@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import cn.ucai.fulicenter.bean.Contact;
-import cn.ucai.fulicenter.bean.Group;
-import cn.ucai.fulicenter.bean.Member;
 import cn.ucai.fulicenter.bean.User;
 import cn.ucai.fulicenter.data.RequestManager;
 
@@ -123,20 +121,6 @@ public class SuperWeChatApplication extends Application {
 	private ArrayList<Contact> contactList = new ArrayList<Contact>();
 	/**全局的当前登录用户的好友集合*/
 	private HashMap<String, Contact> userList = new HashMap<String, Contact>();
-	/**全局的群组集合*/
-	private ArrayList<Group> groupList = new ArrayList<Group>();
-	/**全局的当前公共群列表*/
-	private ArrayList<Group> publicGroupList = new ArrayList<Group>();
-	/**全局的群组成员列表*/
-	private HashMap<String, ArrayList<Member>> groupMembers = new HashMap<String, ArrayList<Member>>();
-
-	public HashMap<String, ArrayList<Member>> getGroupMembers() {
-		return groupMembers;
-	}
-
-	public void setGroupMembers(HashMap<String, ArrayList<Member>> groupMembers) {
-		this.groupMembers = groupMembers;
-	}
 
 	public User getUser() {
 		return user;
@@ -161,22 +145,5 @@ public class SuperWeChatApplication extends Application {
 	public void setUserList(HashMap<String, Contact> userList) {
 		this.userList = userList;
 	}
-
-	public ArrayList<Group> getGroupList() {
-		return groupList;
-	}
-
-	public void setGroupList(ArrayList<Group> groupList) {
-		this.groupList = groupList;
-	}
-
-	public ArrayList<Group> getPublicGroupList() {
-		return publicGroupList;
-	}
-
-	public void setPublicGroupList(ArrayList<Group> publicGroupList) {
-		this.publicGroupList = publicGroupList;
-	}
-
 
 }
