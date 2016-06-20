@@ -22,7 +22,7 @@ android {
     buildToolsVersion "24.0.0 rc2"
 
     defaultConfig{
-        applicationId "cn.ucai.superwechat"
+        applicationId "cn.ucai.fulicenter"
     }
     sourceSets {
         main {
