@@ -46,7 +46,7 @@ import cn.ucai.fulicenter.Constant;
 import cn.ucai.fulicenter.DemoHXSDKHelper;
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.SuperWeChatApplication;
+import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.applib.controller.HXSDKHelper;
 import cn.ucai.fulicenter.bean.Message;
 import cn.ucai.fulicenter.bean.User;
@@ -57,10 +57,13 @@ import cn.ucai.fulicenter.db.EMUserDao;
 import cn.ucai.fulicenter.db.UserDao;
 import cn.ucai.fulicenter.domain.EMUser;
 import cn.ucai.fulicenter.listener.OnSetAvatarListener;
+import cn.ucai.fulicenter.task.DownloadCartListTask;
+import cn.ucai.fulicenter.task.DownloadCollectCountTask;
 import cn.ucai.fulicenter.task.DownloadContactListTask;
 import cn.ucai.fulicenter.utils.CommonUtils;
 import cn.ucai.fulicenter.utils.MD5;
 import cn.ucai.fulicenter.utils.Utils;
+import cn.ucai.fulicenter.view.DisplayUtils;
 
 /**
  * 登陆页面
@@ -83,11 +86,12 @@ public class LoginActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        Log.e(TAG,"111111122222111");
 
 		// 如果用户名密码都有，直接进入主页面
 		if (DemoHXSDKHelper.getInstance().isLogined()) {
 			autoLogin = true;
-			startActivity(new Intent(LoginActivity.this, MainActivity.class));
+			startActivity(new Intent(LoginActivity.this, FuliMainActivit.class));
 
 			return;
 		}
@@ -96,11 +100,12 @@ public class LoginActivity extends BaseActivity {
 
 		usernameEditText = (EditText) findViewById(R.id.username);
 		passwordEditText = (EditText) findViewById(R.id.password);
+        DisplayUtils.initBackWithTitle(this,"账户登录");
 
 		setListener();
 
-		if (SuperWeChatApplication.getInstance().getUserName() != null) {
-			usernameEditText.setText(SuperWeChatApplication.getInstance().getUserName());
+		if (FuLiCenterApplication.getInstance().getUserName() != null) {
+			usernameEditText.setText(FuLiCenterApplication.getInstance().getUserName());
 		}
 	}
 
@@ -158,21 +163,27 @@ public class LoginActivity extends BaseActivity {
         findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e(TAG, "setLoginClickListener11111");
                 if (!CommonUtils.isNetWorkConnected(mContext)) {
                     Toast.makeText(mContext, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                Log.e(TAG, "setLoginClickListener22222");
                 currentUsername = usernameEditText.getText().toString().trim();
+                Log.e(TAG, "currentUsername="+currentUsername);
                 currentPassword = passwordEditText.getText().toString().trim();
+                Log.e(TAG, "currentPassword="+currentPassword);
 
                 if (TextUtils.isEmpty(currentUsername)) {
                     Toast.makeText(mContext, R.string.User_name_cannot_be_empty, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                Log.e(TAG, "setLoginClickListener3333");
                 if (TextUtils.isEmpty(currentPassword)) {
                     Toast.makeText(mContext, R.string.Password_cannot_be_empty, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                Log.e(TAG, "setLoginClickListener4444");
 
                 setProgressShow();
 
@@ -182,6 +193,7 @@ public class LoginActivity extends BaseActivity {
 
                     @Override
                     public void onSuccess() {
+                        Log.e(TAG, "setLoginClickListenersuccess");
                         if (!progressShow) {
                             return;
                         }
@@ -190,10 +202,12 @@ public class LoginActivity extends BaseActivity {
 
                     @Override
                     public void onProgress(int progress, String status) {
+                        Log.e(TAG, "setLoginClickListener66666");
                     }
 
                     @Override
                     public void onError(final int code, final String message) {
+                        Log.e(TAG, "setLoginClickListenerfalse");
                         if (!progressShow) {
                             return;
                         }
@@ -214,6 +228,7 @@ public class LoginActivity extends BaseActivity {
     private void loginAppServer() {
         UserDao dao = new UserDao(mContext);
         User user = dao.findUserByUserName(currentUsername);
+        Log.e(TAG,"user="+user);
         if(user!=null) {
             if(user.getMUserPassword().equals(MD5.getData(currentPassword))){
                 saveUser(user);
@@ -226,6 +241,7 @@ public class LoginActivity extends BaseActivity {
         }else{
             //volley login server
             try {
+                Log.e(TAG,"11111111111111");
                 String path = new ApiParams()
                         .with(I.User.USER_NAME,currentUsername)
                         .with(I.User.PASSWORD,currentPassword)
@@ -260,12 +276,12 @@ public class LoginActivity extends BaseActivity {
 
     /**保存当前登录的用户到全局变量*/
     private void saveUser(User user) {
-        SuperWeChatApplication instance = SuperWeChatApplication.getInstance();
+        FuLiCenterApplication instance = FuLiCenterApplication.getInstance();
         instance.setUser(user);
         // 登陆成功，保存用户名密码
         instance.setUserName(currentUsername);
         instance.setPassword(currentPassword);
-        SuperWeChatApplication.currentUserNick = user.getMUserNick();
+        FuLiCenterApplication.currentUserNick = user.getMUserNick();
     }
 
     private void loginSuccess() {
@@ -276,7 +292,7 @@ public class LoginActivity extends BaseActivity {
             EMChatManager.getInstance().loadAllConversations();
             //下载用户头像
             final OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
-            utils.url(SuperWeChatApplication.SERVER_ROOT)//设置服务端根地址
+            utils.url(FuLiCenterApplication.SERVER_ROOT)//设置服务端根地址
                     .addParam(I.KEY_REQUEST, I.REQUEST_DOWNLOAD_AVATAR)//添加上传的请求参数
                     .addParam(I.AVATAR_TYPE, currentUsername)//添加用户的账号
             .doInBackground(new Callback() {
@@ -301,6 +317,7 @@ public class LoginActivity extends BaseActivity {
                     Log.e(TAG,"start download contact,group,public group");
                     //下载联系人集合
                     new DownloadContactListTask(mContext,currentUsername).execute();
+                    new DownloadCartListTask(mContext, currentUsername, 0, I.PAGE_SIZE_DEFAULT).execute();
                 }
             });
 
@@ -320,18 +337,21 @@ public class LoginActivity extends BaseActivity {
         }
         // 更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
         boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(
-                SuperWeChatApplication.currentUserNick.trim());
+                FuLiCenterApplication.currentUserNick.trim());
         if (!updatenick) {
             Log.e("LoginActivity", "update current user nick fail");
         }
         if (!LoginActivity.this.isFinishing() && pd.isShowing()) {
             pd.dismiss();
         }
-        // 进入主页面
-        Intent intent = new Intent(LoginActivity.this,
-                MainActivity.class);
-        startActivity(intent);
-
+        String action = getIntent().getStringExtra("action");
+        if (action != null) {
+            sendStickyBroadcast(new Intent("update_user"));
+            // 进入主页面
+            Intent intent = new Intent(LoginActivity.this,
+                    FuliMainActivit.class).putExtra("action", action);
+            startActivity(intent);
+        }
         finish();
     }
 
@@ -374,7 +394,7 @@ public class LoginActivity extends BaseActivity {
 	 *
 	 */
 	public void setRegisterClickListener() {
-        findViewById(R.id.btn_register).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_free_register).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(mContext, RegisterActivity.class), 0);

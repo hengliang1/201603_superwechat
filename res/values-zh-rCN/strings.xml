@@ -109,7 +109,7 @@
     <string name="login">登录</string>
     <string name="user_name">用户名</string>
     <string name="password">密码</string>
-    <string name="register">注册</string>
+    <string name="register">免费注册</string>
     <string name="confirmpassword">确认密码</string>
     <string name="downwaiting">正在下载文件请稍后</string>
     <string name="mute">静音</string>
@@ -282,7 +282,7 @@
     <string name="group_search_failed">搜索失败</string>
     <string name="error_send_invalid_content">你发送了不合法的消息内容</string>
     <string name="error_send_not_in_the_group">你已经不在此群了</string>
-    <string name="refreshing_group_list">正在刷新群列表</string>
+    <string name="refreshing_group_list">刷新中</string>
     <string name="failed_to_load_data">加载数据失败，请检查网络或稍后重试</string>
     <string name="searching">正在搜索..</string>
     <string name="hanging_up">正在挂断..</string>
@@ -321,6 +321,10 @@
     <string name="near_people_hint">
         查看附近人的功能将获取你的位置信息，你的位置信息会保留一段时间。通过列表右上角清除功能可随时手动清除位置信息。
     </string>
+    <string name="load_more">加载更多</string>
+    <string name="no_more">没有更多数据了</string>
+    <string name="title_good_detail">商品详情</string>
+
 
     <string name="MSG_900">连接服务器成功</string>
     <string name="MSG_901">连接服务器失败</string>

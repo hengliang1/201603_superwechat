@@ -14,12 +14,23 @@
 package cn.ucai.fulicenter.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.util.Log;
 
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.RequestFuture;
 import com.easemob.util.EMLog;
 import com.easemob.util.PathUtil;
 
 import java.io.File;
+
+import cn.ucai.fulicenter.FuLiCenterApplication;
+import cn.ucai.fulicenter.I;
+import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.activity.FuliMainActivit;
+import cn.ucai.fulicenter.data.RequestManager;
 
 public class ImageUtils {
 //	public static String getThumbnailImagePath(String imagePath) {
@@ -61,6 +72,35 @@ public class ImageUtils {
 		}
 		return folder.getAbsolutePath();
 	}
-	
-	
+
+
+	public static void setNewGoodThumb(String goodsThumb, NetworkImageView nivThumb) {
+		String path = I.DOWNLOAD_NewGood_IMG_URL + goodsThumb;
+		Log.e("main", "path=:" + path);
+		nivThumb.setImageUrl(path, RequestManager.getImageLoader());
+		nivThumb.setErrorImageResId(R.drawable.nopic);
+		nivThumb.setDefaultImageResId(R.drawable.nopic);
+	}
+
+	public static void setGoodDetailThumb(String colorImg, NetworkImageView imageView) {
+		String url = FuLiCenterApplication.SERVER_ROOT
+				+ "?" + I.KEY_REQUEST + "=" + I.REQUEST_DOWNLOAD_COLOR_IMG
+				+ "&" + I.Color.COLOR_IMG + "=" + colorImg;
+		setThumb(url, imageView);
+	}
+
+	public static void setThumb(String url, NetworkImageView imageView) {
+		imageView.setDefaultImageResId(R.drawable.nopic);
+		imageView.setErrorImageResId(R.drawable.nopic);
+		imageView.setImageUrl(url, RequestManager.getImageLoader());
+	}
+
+	public static int getDrawableWidth(Context context,int resId){
+		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+		return bitmap.getWidth();
+	}
+	public static int getDrawableHeight(Context context,int resId){
+		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+		return bitmap.getHeight();
+	}
 }

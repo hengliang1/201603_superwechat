@@ -29,12 +29,13 @@ import com.easemob.chat.EMChatManager;
 
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.SuperWeChatApplication;
+import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.bean.Message;
 import cn.ucai.fulicenter.data.OkHttpUtils;
 import cn.ucai.fulicenter.listener.OnSetAvatarListener;
 import cn.ucai.fulicenter.utils.ImageUtils;
 import cn.ucai.fulicenter.utils.Utils;
+import cn.ucai.fulicenter.view.DisplayUtils;
 
 import com.easemob.exceptions.EaseMobException;
 
@@ -74,7 +75,7 @@ public class RegisterActivity extends BaseActivity {
 
 	private void setListener() {
 		OnSetRegisterListener();
-		OnSetLoginListener();
+//		OnSetLoginListener();
 		OnSetAvatarListener();
 	}
 
@@ -105,6 +106,7 @@ public class RegisterActivity extends BaseActivity {
 		confirmPwdEditText = (EditText) findViewById(cn.ucai.fulicenter.R.id.confirm_password);
 		userNickEditText = (EditText) findViewById(R.id.nick);
 		mIVAvatar = (ImageView) findViewById(R.id.iv_avatar);
+		DisplayUtils.initBackWithTitle(this,"账户注册");
 	}
 
 	/**
@@ -163,7 +165,7 @@ public class RegisterActivity extends BaseActivity {
 		File file = new File(ImageUtils.getAvatarPath(mcontext, I.AVATAR_TYPE_USER_PATH),
 				avatarName + I.AVATAR_SUFFIX_JPG);
 		OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
-		utils.url(SuperWeChatApplication.SERVER_ROOT)
+		utils.url(FuLiCenterApplication.SERVER_ROOT)
 				.addParam(I.KEY_REQUEST,I.REQUEST_REGISTER)
 				.addParam(I.User.USER_NAME,username)
 				.addParam(I.User.NICK,nick)
@@ -205,7 +207,7 @@ public class RegisterActivity extends BaseActivity {
 							if (!RegisterActivity.this.isFinishing())
 								pd.dismiss();
 							// 保存用户名
-							SuperWeChatApplication.getInstance().setUserName(username);
+							FuLiCenterApplication.getInstance().setUserName(username);
 							Toast.makeText(getApplicationContext(), getResources().getString(cn.ucai.fulicenter.R.string.Registered_successfully), Toast.LENGTH_SHORT).show();
 							finish();
 						}
@@ -239,7 +241,7 @@ public class RegisterActivity extends BaseActivity {
 	private void unRegister() {
 		//url=http://10.0.2.2:8080/SuperWeChatServer/Server?request=unregister&m_user_name=
 		OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
-		utils.url(SuperWeChatApplication.SERVER_ROOT)
+		utils.url(FuLiCenterApplication.SERVER_ROOT)
 				.addParam(I.KEY_REQUEST,I.REQUEST_UNREGISTER)
 				.addParam(I.User.USER_NAME,username)
 				.targetClass(Message.class)
@@ -254,25 +256,24 @@ public class RegisterActivity extends BaseActivity {
 
 					}
 				});
+
 	}
-
-	/**
-	 * 登录
-	 */
-
-	private void OnSetLoginListener() {
-		findViewById(R.id.btnLogin).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
+//
+//	/**
+//	 * 登录
+//	 */
+//
+//	private void OnSetLoginListener() {
+//		findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				finish();
+//			}
+//		});
 //		Intent intent = new Intent(this,LoginActivity.class);
 //		startActivity(intent);
-
-	}
+//	}
 	public void back(View view) {
 		finish();
 	}
-
 }

@@ -17,19 +17,22 @@ import android.app.Application;
 import android.content.Context;
 
 import com.easemob.EMCallBack;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cn.ucai.fulicenter.bean.CartBean;
 import cn.ucai.fulicenter.bean.Contact;
 import cn.ucai.fulicenter.bean.User;
 import cn.ucai.fulicenter.data.RequestManager;
 
-public class SuperWeChatApplication extends Application {
-	public static String SERVER_ROOT = "http://10.0.2.2:8080/SuperWeChatServer/Server";
+public class FuLiCenterApplication extends Application {
+	public static String SERVER_ROOT = "http://192.168.8.14:8080/FuLiCenterServer/Server";
 
 	public static Context applicationContext;
-	private static SuperWeChatApplication instance;
+	private static FuLiCenterApplication instance;
 	// login user name
 	public final String PREF_USERNAME = "username";
 	
@@ -39,12 +42,17 @@ public class SuperWeChatApplication extends Application {
 	public static String currentUserNick = "";
 	public static DemoHXSDKHelper hxSDKHelper = new DemoHXSDKHelper();
 
+	private RefWatcher refWatcher;
+	public static RefWatcher getRefWatcher(Context context) {
+		return instance.refWatcher;
+	}
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
         applicationContext = this;
         instance = this;
-
+		refWatcher = LeakCanary.install(this);
         /**
          * this function will initialize the HuanXin SDK
          * 
@@ -67,7 +75,7 @@ public class SuperWeChatApplication extends Application {
 		RequestManager.init(applicationContext);
 	}
 
-	public static SuperWeChatApplication getInstance() {
+	public static FuLiCenterApplication getInstance() {
 		return instance;
 	}
  
@@ -121,6 +129,30 @@ public class SuperWeChatApplication extends Application {
 	private ArrayList<Contact> contactList = new ArrayList<Contact>();
 	/**全局的当前登录用户的好友集合*/
 	private HashMap<String, Contact> userList = new HashMap<String, Contact>();
+
+	public ArrayList<CartBean> getCartList() {
+		return cartList;
+	}
+
+	public void setCartList(ArrayList<CartBean> cartList) {
+		this.cartList = cartList;
+	}
+
+	/**全局的当前登录用户的购物车集合*/
+	private ArrayList<CartBean> cartList = new ArrayList<CartBean>();
+
+	public int getCollectCount() {
+		return collectCount;
+	}
+
+	public void setCollectCount(int collectCount) {
+		this.collectCount = collectCount;
+	}
+
+	/**全局的当前登录用户的收藏商品数量*/
+	private int collectCount;
+
+
 
 	public User getUser() {
 		return user;

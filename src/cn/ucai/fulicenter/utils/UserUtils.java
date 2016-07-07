@@ -8,7 +8,7 @@ import android.widget.TextView;
 import cn.ucai.fulicenter.Constant;
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
-import cn.ucai.fulicenter.SuperWeChatApplication;
+import cn.ucai.fulicenter.FuLiCenterApplication;
 import cn.ucai.fulicenter.applib.controller.HXSDKHelper;
 import cn.ucai.fulicenter.DemoHXSDKHelper;
 import cn.ucai.fulicenter.bean.Contact;
@@ -44,7 +44,7 @@ public class UserUtils {
 
 
     public static Contact getUserBeanInfo(String username) {
-        Contact contact = SuperWeChatApplication.getInstance().getUserList().get(username);
+        Contact contact = FuLiCenterApplication.getInstance().getUserList().get(username);
         return contact;
     }
 
@@ -92,7 +92,7 @@ public class UserUtils {
     /**
      * 设置当前用户头像
      */
-    public static void setCurrentUserAvatar(Context context, ImageView imageView) {
+    public static void setCurrenUserAvatar(Context context, ImageView imageView) {
         EMUser user = ((DemoHXSDKHelper) HXSDKHelper.getInstance()).getUserProfileManager().getCurrentUserInfo();
         if (user != null && user.getAvatar() != null) {
             Picasso.with(context).load(user.getAvatar()).placeholder(cn.ucai.fulicenter.R.drawable.default_avatar).into(imageView);
@@ -102,7 +102,7 @@ public class UserUtils {
     }
 
     public static void setCurrentUserAvatar(NetworkImageView imageView) {
-        User user = SuperWeChatApplication.getInstance().getUser();
+        User user = FuLiCenterApplication.getInstance().getUser();
         if (user != null) {
             setUserAvatar(getAvatarPath(user.getMUserName()), imageView);
         }
@@ -155,7 +155,7 @@ public class UserUtils {
     }
 
     public static void setCurrentUserBeanNick(TextView textView) {
-        User user = SuperWeChatApplication.getInstance().getUser();
+        User user = FuLiCenterApplication.getInstance().getUser();
         if (user != null && user.getMUserNick() != null && textView != null) {
             textView.setText(user.getMUserNick());
         }

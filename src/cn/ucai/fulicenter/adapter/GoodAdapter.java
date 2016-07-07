@@ -1,6 +1,7 @@
 package cn.ucai.fulicenter.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +12,15 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
+import cn.ucai.fulicenter.D;
 import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
+import cn.ucai.fulicenter.activity.GoodDetailsActivity;
 import cn.ucai.fulicenter.bean.NewGoodBean;
+import cn.ucai.fulicenter.utils.ImageUtils;
 
 /**
  * Created by sks on 2016/6/21.
@@ -28,6 +34,49 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private String footerText;
     private boolean isMore;
+    int sortBy;
+
+    public void setSortBy(int sortBy) {
+        this.sortBy = sortBy;
+        sort(sortBy);
+        notifyDataSetChanged();
+    }
+
+    private void sort(final int sortBy) {
+        Collections.sort(mGoodList, new Comparator<NewGoodBean>() {
+            @Override
+            public int compare(NewGoodBean g1, NewGoodBean g2) {
+                int result = 0;
+                switch (sortBy) {
+                    case I.SORT_BY_ADDTIME_ASC:
+                        result = (int) (g1.getAddTime() - g2.getAddTime());
+                        break;
+                    case I.SORT_BY_ADDTIME_DESC:
+                        result = (int) (g2.getAddTime() - g1.getAddTime());
+                        break;
+                    case I.SORT_BY_PRICE_ASC: {
+                        int p1 = converPrice(g1.getCurrencyPrice());
+                        int p2 = converPrice(g2.getCurrencyPrice());
+                        result = p1 - p2;
+                        break;
+                    }
+                    case I.SORT_BY_PRICE_DESC: {
+                        int p1 = converPrice(g1.getCurrencyPrice());
+                        int p2 = converPrice(g2.getCurrencyPrice());
+                        result = p2 - p1;
+                    }
+                    break;
+                }
+                return result;
+            }
+
+            private int converPrice(String price) {
+                price = price.substring(price.indexOf("￥")+1);
+                int p1 = Integer.parseInt(price);
+                return p1;
+            }
+        });
+    }
 
     public String getFooterText() {
         return footerText;
@@ -49,6 +98,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public GoodAdapter(Context mContext, ArrayList<NewGoodBean> mGoodList, int sortBy) {
         this.mContext = mContext;
         this.mGoodList = mGoodList;
+        this.sortBy = sortBy;
     }
 
     @Override
@@ -78,12 +128,22 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final NewGoodBean good = mGoodList.get(position);
             goodHolder.tvGoodName.setText(good.getGoodsName());
             goodHolder.tvGoodPrice.setText(good.getCurrencyPrice());
+            ImageUtils.setNewGoodThumb(good.getGoodsThumb(), goodHolder.nivThumb);
+
+
+            goodHolder.layoutGood.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mContext.startActivity(new Intent(mContext, GoodDetailsActivity.class)
+                            .putExtra(D.NewGood.KEY_GOODS_ID, good.getGoodsId()));
+                }
+            });
         }
     }
 
     @Override
     public int getItemCount() {
-        return mGoodList==null?1:mGoodList.size()+1;
+        return mGoodList == null ? 1 : mGoodList.size() + 1;
     }
 
     @Override
@@ -92,6 +152,30 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return I.TYPE_FOOTER;
         } else {
             return I.TYPE_ITEM;
+        }
+    }
+
+    public void initList(ArrayList<NewGoodBean> list) {
+        if (mGoodList != null)
+            mGoodList.clear();
+        mGoodList.addAll(list);
+
+    }
+
+    public void initItems(ArrayList<NewGoodBean> list) {
+        if (mGoodList != null && !mGoodList.isEmpty()) {
+            mGoodList.clear();
+        }
+        mGoodList.addAll(list);
+        notifyDataSetChanged();
+    }
+
+    public void addItem(ArrayList<NewGoodBean> list) {
+        for (NewGoodBean ng : list) {
+            if (!mGoodList.contains(ng)) {
+                mGoodList.add(ng);
+                notifyDataSetChanged();
+            }
         }
     }
 

@@ -9,6 +9,8 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
+
+    /**最好不要用这句话**/
     compile fileTree(include: '*.jar', dir: 'libs')
     compile files('libs/gson-2.2.4.jar')
     compile files('libs/okhttp-2.7.5.jar')
@@ -18,12 +20,31 @@ dependencies {
     compile files('libs/jackson-core-asl-1.9.11.jar')
     compile 'com.android.support:support-v4:23.3.0'
     compile 'com.android.support:recyclerview-v7:23.3.0'
+    compile files('libs/disklrucache-2.0.2.jar')
+    compile files('libs/MobCommons-2016.0426.1819.jar')
+    compile files('libs/MobTools-2016.0426.1819.jar')
+    compile files('libs/ShareSDK-Core-2.7.2.jar')
+    compile files('libs/ShareSDK-Email-2.7.2.jar')
+    compile files('libs/ShareSDK-QQ-2.7.2.jar')
+    compile files('libs/ShareSDK-QZone-2.7.2.jar')
+    compile files('libs/ShareSDK-ShortMessage-2.7.2.jar')
+    compile files('libs/ShareSDK-SinaWeibo-2.7.2.jar')
+    compile files('libs/ShareSDK-TencentWeibo-2.7.2.jar')
+    compile files('libs/ShareSDK-Wechat-2.7.2.jar')
+    compile files('libs/ShareSDK-Wechat-Core-2.7.2.jar')
+    compile files('libs/ShareSDK-Wechat-Moments-2.7.2.jar')
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 }
 
 android {
     compileSdkVersion 23
     buildToolsVersion "24.0.0 rc2"
 
+    repositories {
+        maven { url 'http://repo1.maven.org/maven2' }
+    }
     defaultConfig {
         applicationId "cn.ucai.fulicenter"
     }

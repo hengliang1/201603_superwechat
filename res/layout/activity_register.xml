@@ -6,27 +6,14 @@
     android:orientation="vertical"
     android:id="@+id/layout_register">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="超级微信"
-            android:drawableLeft="@drawable/mobile"
-            android:gravity="center"
-            android:textColor="#000"
-            />
-    </RelativeLayout>
+    <include layout="@layout/item_back_title_white_register" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="4"
         android:orientation="vertical" >
 
@@ -191,21 +178,6 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/btnLogin"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/button_register_bg"
-                android:onClick="login"
-                android:paddingBottom="7dp"
-                android:paddingTop="7dp"
-                android:text="@string/login"
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
-            <Button
                 android:id="@+id/btnRegister"
                 android:layout_width="0dp"
                 android:layout_weight="2"
@@ -213,7 +185,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/button_login_bg"
+                android:background="@color/main_orange"
                 android:onClick="register"
                 android:paddingBottom="7dp"
                 android:paddingTop="7dp"

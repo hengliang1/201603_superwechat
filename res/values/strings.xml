@@ -358,6 +358,7 @@
     <string name="msg_502">msg:location upload fail</string>
     <string name="msg_503">msg:location update success</string>
     <string name="msg_504">msg:location update fail</string>
+
     <string name="msg_999">msg:unknow</string>
     <!-- 支付的字符串资源 -->
     <string name="title_activity_pay">支付</string>

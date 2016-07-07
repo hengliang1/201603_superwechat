@@ -2,27 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eff2f6"
+    android:background="@color/fragment_bg"
     android:orientation="vertical" >
 
+    <include layout="@layout/item_back_title_white" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="1" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:text="@string/app_name"
-            android:textColor="#000"
-            android:drawableLeft="@drawable/mobile"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
+        android:layout_marginTop="10dp"
         android:layout_weight="1" >
 
         <RelativeLayout
@@ -50,7 +37,6 @@
                 android:background="@null"
                 android:hint="@string/user_name"
                 android:paddingLeft="10dip"
-                android:singleLine="true"
                 android:textColor="#000"
                 android:textSize="18sp" />
         </RelativeLayout>
@@ -94,32 +80,15 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="30dp"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/btn_register"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dip"
-                android:layout_marginRight="10dip"
-                android:layout_weight="1"
-                android:background="@drawable/button_register_bg"
-                android:gravity="center"
-                android:onClick="register"
-                android:paddingBottom="7dp"
-                android:paddingTop="7dp"
-                android:text="@string/register"
-                android:textColor="@android:color/black"
-                android:textSize="18sp" />
+            android:orientation="vertical" >
 
             <Button
                 android:id="@+id/btn_login"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dip"
                 android:layout_marginRight="10dip"
-                android:layout_weight="1"
-                android:background="@drawable/button_login_bg"
+                android:background="@color/main_orange"
                 android:gravity="center"
                 android:onClick="login"
                 android:paddingBottom="7dp"
@@ -127,14 +96,23 @@
                 android:text="@string/login"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
+            <Button
+                android:id="@+id/btn_free_register"
+                android:layout_marginTop="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:background="@drawable/tb_regiser_bg"
+                android:gravity="center"
+                android:onClick="login"
+                android:paddingBottom="7dp"
+                android:paddingTop="7dp"
+                android:text="   免费注册   "
+                android:textColor="@color/orange"
+                android:textSize="18sp" />
         </LinearLayout>
     </RelativeLayout>
-
-        <TextView
-            android:id="@+id/tvServerIp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="设置服务器IP地址"/>
 
 </LinearLayout>
